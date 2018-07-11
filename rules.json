@@ -9,7 +9,7 @@
       "_id": "event-2"
     },
     {
-      "eventName": "formatTestSuiteResults",
+      "eventName": "parseTestNGResults",
       "_id": "event-3"
     },
     {
@@ -39,7 +39,7 @@
       "_id": "action-2"
     },
     {
-      "name": "parseTestNGSuiteResult",
+      "name": "parseTestNGResults",
       "description": null,
       "pFunction": "const xml2js = require(\"xml2js\");\n\nvar payload = body;\nvar testResults = payload.result;\nvar projectId = payload.projectID;\nvar cycleId = payload.testcycle;\nvar testLogs = [];\nvar timestamp = new Date();\n\nvar xmlString = decodeURI(testResults);\nxmlString = xmlString.replace(/`/g, '&');\n\nxml2js.parseString(xmlString, {\n    preserveChildrenOrder: true,\n    explicitArray: false,\n    explicitChildren: false\n}, function (err, result) {\n    if (err) {\n        emitEvent('SlackEvent', { Error: \"Unexecpted Error Parsing XML Document: \" + err }); \n    } else {\n        var testcases = Array.isArray(result.testsuite.testcase) ? result.testsuite.testcase : [result.testsuite.testcase]\n        testcases.forEach(function(obj) {\n            var name = `${obj.$.classname}#${obj.$.name}`;\n            var exe_start_date = timestamp;\n            var exe_end_date = timestamp;\n            exe_end_date.setSeconds(exe_start_date.getSeconds() + (Math.floor(obj.$.time || 0)));\n\n            var status = (undefined !== obj.skipped) ? \"SKIP\" : obj.failure ? \"FAIL\" : \"PASS\";\n            var testCase = {\n                status: status,\n                name: name,\n                attachments: [],\n                exe_start_date: exe_start_date.toISOString(),\n                exe_end_date: exe_end_date.toISOString(),\n                automation_content: name,\n                module_names: [obj.$.classname, obj.$.name],\n                test_step_logs: [{\n                    order: 0,\n                    status: status,\n                    description: obj.$.name,\n                    expected_result: obj.$.name\n                }]\n            };\n            if (obj.failure) {\n                testCase.attachments.push({\n                    name: `${obj.$.name}.txt`,\n                    data: Buffer.from(obj.failure._).toString(\"base64\"),\n                    content_type: \"text/plain\"\n                });\n            }\n            testLogs.push(testCase);\n        });\n\n    }\n});\n\nvar formattedResults = {\n    \"projectId\" : projectId,\n    \"test-cycle\" : cycleId,\n    \"logs\" : testLogs\n};\n\nemitEvent('SlackEvent', { ResultsFormatSuccess: \"Results formatted successfully for project\" }); \nemitEvent('UpdateQTestWithFormattedResultsEvent', formattedResults );\n",
       "_id": "action-3"
@@ -70,6 +70,7 @@
         "action-1"
       ],
       "isEnabled": true,
+      "webhook": "event-1",
       "_id": "rule-1"
     },
     {
@@ -82,7 +83,7 @@
       "_id": "rule-2"
     },
     {
-      "name": "FormatTestSuiteTestNGResults",
+      "name": "parseTestNG",
       "webhook": "event-3",
       "actions": [
         "action-3"
