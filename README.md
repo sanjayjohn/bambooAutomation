@@ -77,6 +77,8 @@ For this example we will be pulling a TestNg Sample Test from QASymphony GitHub&
 
 In the script, replace the values of projectId and testcycle with the values that you acquired from qTest Manager. The values are located in the $body variable. Finally replace the url in the request with the "parseTestNGResults" Event URL, which can be found in Pulse.
 
+![](/images/bambooscript.png)
+
 The tasks should be formatted as below:
 
 ![](/images/bambootasks.PNG)
