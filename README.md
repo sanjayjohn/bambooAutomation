@@ -33,6 +33,8 @@ Create constants as shown in the image below with your information:
 
 Navigate to the repository where the project will be located. Go to settings and click on the Webhooks tab. Add a Webhook and in the section for a Payload URL place the Pulse URL for the "triggerBamboo" Event in Pulse. To find the Pulse URL click on the Edit Event Button (Pencil Icon) next to the triggerBamboo Event. Finally, save the Webhook.
 
+![](/images/pulseurl.png)
+
 ![](/images/githubwebhook.png)
 
 ## Set up qTest Manager:
@@ -87,7 +89,7 @@ Once Pulse, GitHub, Slack, Manager, and Bamboo are setup properly, this workflow
 
 ![](/images/bambooprojectid.png)
 
-For example the commit below will trigger the plan SP-NP.
+For example the commit message below will trigger the plan SP-NP when the push event occurs.
 
 `git commit -m "SP-NP"` 
 
